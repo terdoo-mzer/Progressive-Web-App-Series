@@ -1,4 +1,7 @@
-// check compatibility
+
+  
+  (function () {
+    // check compatibility
 if (!("BarcodeDetector" in globalThis)) {
     alert("Barcode Detector is not supported by this browser.");
   } else {
@@ -9,4 +12,4 @@ if (!("BarcodeDetector" in globalThis)) {
       formats: ["code_39", "codabar", "ean_13"],
     });
   }
-  
+  })();
