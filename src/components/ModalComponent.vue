@@ -1,13 +1,11 @@
 <template>
-    <div>
-        <p class="">Home View</p>
-    </div>
+  <div>
+    <p>Modal</p>
+  </div>
 </template>
 
 <script setup>
-
 </script>
 
 <style lang="scss" scoped>
-
 </style>
