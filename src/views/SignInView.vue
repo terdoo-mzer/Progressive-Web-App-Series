@@ -4,7 +4,7 @@
     <div class="container flex items-center justify-center min-h-screen px-6 mx-auto">
       <div class="mt-6">
         <button
-          @click.prevent="getProduct"
+          @click.prevent="detectBarcode"
           class="flex items-center justify-center px-6 py-3 mt-4 transition-colors duration-300 transform border rounded-lg text-white bg-indigo-600"
         >
           <svg
@@ -30,6 +30,7 @@
 <script setup>
 import NavComponent from '@/components/NavComponent.vue'
 import { guestSignIn, getUser, updateCustomer, getProducts, getProduct } from '@/utils/firbaseauth'
+import { detectBarcode } from '@/utils/barcode'
 
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
