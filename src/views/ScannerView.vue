@@ -29,20 +29,20 @@ const centerRegion = {
 
 const startScanner = () => {
   if (!('BarcodeDetector' in globalThis)) {
-    alert('Barcode Detector is not supported by this browser.')
-    return
+    // Run the polyfill
+    const barcodeDetector = new BarcodeDetectorPolyfill({ formats: ['ean_13', 'code_128'] })
+
+    navigator.mediaDevices
+      .getUserMedia({ video: { facingMode: 'environment' } })
+      .then((stream) => {
+        video.value.srcObject = stream
+        video.value.play()
+        detectBarcodes(barcodeDetector)
+      })
+      .catch((err) => console.error('Error accessing camera:', err))
+  } else {
+    // Run the web native barcode detector here
   }
-
-  const barcodeDetector = new BarcodeDetectorPolyfill({ formats: ['ean_13', 'code_128'] })
-
-  navigator.mediaDevices
-    .getUserMedia({ video: { facingMode: 'environment' } })
-    .then((stream) => {
-      video.value.srcObject = stream
-      video.value.play()
-      detectBarcodes(barcodeDetector)
-    })
-    .catch((err) => console.error('Error accessing camera:', err))
 }
 
 const detectBarcodes = async (barcodeDetector) => {
@@ -70,7 +70,7 @@ const detectBarcodes = async (barcodeDetector) => {
 
       for (const barcode of barcodes) {
         if (checkPosition(barcode.boundingBox, videoWidth, videoHeight)) {
-          console.log('Barcode detected:', barcode.rawValue)
+          alert('Barcode detected:', barcode.rawValue)
           barcodeValue.value = barcode.rawValue
           state.isDetecting = false // Stop detecting after successful capture
           setTimeout(() => (state.isDetecting = true), 2000) // Resume detection after 2 seconds
@@ -78,7 +78,7 @@ const detectBarcodes = async (barcodeDetector) => {
         }
       }
     } catch (error) {
-      console.error('Error detecting barcode:', error)
+      alert('Error detecting barcode:', error)
     }
 
     await new Promise((resolve) => setTimeout(resolve, 100)) // Small delay to reduce CPU usage
@@ -94,7 +94,7 @@ onMounted(() => {
 .camera-wrapper {
   position: relative;
   width: 100%;
-  max-width: 400px;
+  max-width: 500px;
   margin: auto;
 }
 
@@ -106,10 +106,10 @@ video {
 
 .center-overlay {
   position: absolute;
-  top: 40%;
-  left: 40%;
-  width: 20%; /* Center region width (60%-40%) */
-  height: 20%; /* Center region height (60%-40%) */
+  top: 20%;
+  left: 20%;
+  width: 60%; /* Center region width (60%-40%) */
+  height: 60%; /* Center region height (60%-40%) */
   border: 2px dashed red;
   box-sizing: border-box;
   pointer-events: none; /* Ensure overlay doesn't block video */
