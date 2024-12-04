@@ -2,8 +2,9 @@
   <NavComponent />
   <section class="pt-16 xl:pt-8">
     <div class="flex flex-col h-screen w-full items-center justify-center">
-      <button
-        href="#"
+      <router-link
+        to="/dashboard/scan"
+        @click.prevent="openScanner"
         class="flex items-center justify-center px-6 py-3 mb-4 transition-colors duration-300 transform border rounded-lg text-white bg-indigo-600"
       >
         <svg
@@ -19,7 +20,7 @@
         </svg>
 
         <span class="mx-2">Start Shoping</span>
-      </button>
+      </router-link>
       <div class="w-96 rounded px-6 pt-8 shadow-md">
         <div class="flex flex-col justify-center items-center gap-2">
           <h4 class="text-xl font-semibold">Receipts</h4>
@@ -41,12 +42,26 @@
           </table>
         </div>
       </div>
+      <ScannerComponent :showScanner="showScanner" @closeScanner="handleCloseScanner" />
     </div>
   </section>
 </template>
 
 <script setup>
+import { ref } from 'vue'
+
 import NavComponent from '@/components/NavComponent.vue'
+import ScannerComponent from '@/components/ScannerComponent.vue'
+
+const showScanner = ref(false)
+
+const openScanner = () => {
+  showScanner.value = true
+}
+
+const handleCloseScanner = (val) => {
+  showScanner.value = val
+}
 </script>
 
 <style lang="scss" scoped>

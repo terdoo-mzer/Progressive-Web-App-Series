@@ -1,23 +1,18 @@
-export const detectBarcode =  () => {
-    // Check if the browser supports the Barcode Detector API
+import { BarcodeDetector as BarcodeDetectorPolyfill } from "barcode-detector/pure";
+
+export const detectBarcode =  async () => {
+    // Check if the browser supports the Barcode Detector API.
+    // If it doesn't, use the polyfill
     if (!("BarcodeDetector" in globalThis)) {
-      alert("Barcode Detector is not supported by this browser.");
-      console.error("Barcode Detector API is not available.");
-      return; // Exit the function since the feature is unsupported
+        const barcodeDetector = new BarcodeDetectorPolyfill({
+            formats: ["qr_code"],
+          });
+          
+          const imageFile = await fetch(
+            "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=Hello%20world!",
+          ).then((resp) => resp.blob());
+          
+          barcodeDetector.detect(imageFile).then(console.log);  
     }
-  
-    alert("Barcode Detector supported!");
-  
-    // try {
-    //   // Create a new BarcodeDetector instance
-    //   const barcodeDetector = new BarcodeDetector({
-    //     formats: ["code_39", "codabar", "ean_13"],
-    //   });
-  
-    //   console.log("BarcodeDetector instance created successfully:", barcodeDetector);
-    //   // You can now use `barcodeDetector.detect` to scan barcodes
-    // } catch (error) {
-    //   console.error("Error creating BarcodeDetector:", error);
-    // }
-  }
+}
   

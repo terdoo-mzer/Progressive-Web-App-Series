@@ -6,6 +6,8 @@ import ThankYouView from "@/views/ThankYouView.vue";
 import DashboardView from "@/views/DashboardView.vue";
 import OrdersView from "@/views/OrdersView.vue";
 import ReceiptView from "@/views/ReceiptView.vue";
+import ScannerView from "@/views/ScannerView.vue";
+import testScanner from "@/views/testScanner.vue";
 
 
 const routes = [
@@ -13,6 +15,11 @@ const routes = [
         path: "/",
         name: "LandingPage",
         component: LandingPageView
+    },
+    {
+        path: '/test',
+        name: "Test",
+        component: testScanner
     },
     {
         path: "/signin",
@@ -25,6 +32,7 @@ const routes = [
           { path: '', component: DashboardView },
           { path: 'orders', component: OrdersView },
           { path: 'orders/:id', component: ReceiptView },
+          { path: "scan", component: ScannerView},
         ], 
       },
     {
