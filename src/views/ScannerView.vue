@@ -13,6 +13,10 @@
 import { onMounted, ref, reactive } from 'vue'
 import { BarcodeDetector as BarcodeDetectorPolyfill } from 'barcode-detector/pure'
 
+const barcodeFormats = { formats: ['ean_13', 'code_128'] }
+const barcodeDetectorPolyfill = new BarcodeDetectorPolyfill(barcodeFormats) // Polyfill to use for browsers that do not support barcode api
+const barcodeDetector = new BarcodeDetector(barcodeFormats) // Native support
+
 const video = ref(null) // Video element
 const barcodeValue = ref('') // Holds the last detected barcode value
 const state = reactive({
@@ -30,8 +34,16 @@ const centerRegion = {
 const startScanner = () => {
   if (!('BarcodeDetector' in globalThis)) {
     // Run the polyfill
-    const barcodeDetector = new BarcodeDetectorPolyfill({ formats: ['ean_13', 'code_128'] })
-
+    navigator.mediaDevices
+      .getUserMedia({ video: { facingMode: 'environment' } })
+      .then((stream) => {
+        video.value.srcObject = stream
+        video.value.play()
+        detectBarcodes(barcodeDetectorPolyfill)
+      })
+      .catch((err) => console.error('Error accessing camera:', err))
+  } else {
+    // Run the web native barcode detector here
     navigator.mediaDevices
       .getUserMedia({ video: { facingMode: 'environment' } })
       .then((stream) => {
@@ -40,12 +52,10 @@ const startScanner = () => {
         detectBarcodes(barcodeDetector)
       })
       .catch((err) => console.error('Error accessing camera:', err))
-  } else {
-    // Run the web native barcode detector here
   }
 }
 
-const detectBarcodes = async (barcodeDetector) => {
+const detectBarcodes = async (barcodeDetectorPolyfill) => {
   const checkPosition = (boundingBox, videoWidth, videoHeight) => {
     // Calculate center region coordinates
     const xStart = (centerRegion.xStartPercent / 100) * videoWidth
@@ -64,7 +74,7 @@ const detectBarcodes = async (barcodeDetector) => {
 
   while (state.isDetecting) {
     try {
-      const barcodes = await barcodeDetector.detect(video.value)
+      const barcodes = await barcodeDetectorPolyfill.detect(video.value)
       const videoWidth = video.value.videoWidth
       const videoHeight = video.value.videoHeight
 
