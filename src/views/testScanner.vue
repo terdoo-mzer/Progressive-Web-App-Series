@@ -72,7 +72,7 @@
     startButton = document.getElementById('start-button')
 
     navigator.mediaDevices
-      .getUserMedia({ video: true, audio: false })
+      .getUserMedia({ video: true, audio: true })
       .then((stream) => {
         video.srcObject = stream
         video.play()
@@ -140,8 +140,10 @@
       canvas.width = width
       canvas.height = height
       context.drawImage(video, 0, 0, width, height)
+      console.log(video)
 
       const data = canvas.toDataURL('image/png')
+
       photo.setAttribute('src', data)
     } else {
       clearPhoto()
