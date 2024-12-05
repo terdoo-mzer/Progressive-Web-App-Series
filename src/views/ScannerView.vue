@@ -23,7 +23,7 @@ const barcodeDetector =
 const video = useTemplateRef('video') // Video element
 const barcodeValue = ref('') // Holds the last detected barcode value
 const state = reactive({
-  isDetecting: false, // Prevent multiple detections at once
+  isDetecting: true, // Prevent multiple detections at once
 })
 
 // function test() {
@@ -43,28 +43,37 @@ const state = reactive({
 const startScanner = () => {
   navigator.mediaDevices
     .getUserMedia({
-      video: { facingMode: { exact: 'environment' } },
-      width: { ideal: 1280 },
-      height: { ideal: 720 },
+      //   video: {
+      //     facingMode: 'environment',
+      //     width: { ideal: 1280 },
+      //     height: { ideal: 720 },
+      //   },
+      video: true,
+      //   audio: true,
     })
     .then((stream) => {
       video.value.srcObject = stream
       video.value.addEventListener('loadeddata', () => {
         video.value.play()
 
-        barcodeDetector
-          .detect(video.value)
-          .then((barcodes) => {
-            if (barcodes) {
-              console.log('Barcode detected', barcodes)
-              barcodes.forEach((barcode) => console.log(barcode.rawValue))
-            } else {
-              console.log('Barcode not detected')
+        const detectBC = async () => {
+          while (state.isDetecting) {
+            try {
+              const barcodes = await barcodeDetector.detect(video.value)
+              if (barcodes) {
+                barcodes.forEach((barcode) => console.log('Detected barcode:', barcode.rawValue))
+                state.isDetecting = false
+              } else {
+                console.log('No barcodes detected')
+              }
+            } catch (err) {
+              console.error('Error detecting barcode:', err)
             }
-          })
-          .catch((err) => {
-            console.log(err)
-          })
+            await new Promise((resolve) => setTimeout(resolve, 100)) // Short delay to reduce CPU usage
+          }
+        }
+
+        detectBC()
       })
     })
     .catch((err) => console.error('Error accessing camera:', err))
