@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="camera-wrapper">
-      <video ref="video" autoplay muted playsinline></video>
+      <video ref="video" playsinline></video>
       <!-- Visual overlay for center region -->
       <!-- <div class="center-overlay"></div> -->
     </div>
@@ -55,12 +55,9 @@ const startScanner = () => {
         barcodeDetector
           .detect(video.value)
           .then((barcodes) => {
-            if (barcodes.length > 0) {
+            if (barcodes) {
               console.log('Barcode detected', barcodes)
-              for (const barcode of barcodes) {
-                console.log(barcode)
-                barcodeValue.value = barcode.rawValue
-              }
+              barcodes.forEach((barcode) => console.log(barcode.rawValue))
             } else {
               console.log('Barcode not detected')
             }
